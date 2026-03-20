@@ -1,0 +1,40 @@
+name: Build and Deploy React App and Node.js API
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Build & Deploy Frontend (React)
+  build-and-deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '24.x'
+      - run: npm ci && npm run build
+        working-directory: frontend
+      - uses: azure/webapp-deploy@v2
+        with:
+          app-name: 'my-react-app-service'
+          publish-profile: ${{ secrets.AZURE_REACT_APP_PUBLISH_PROFILE }}
+          package: frontend/build
+
+  # Build & Deploy Backend (Node.js)
+  build-and-deploy-backend:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-frontend # Optional: Run in parallel if preferred
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '24.x'
+      - run: npm ci
+        working-directory: backend
+      - uses: azure/webapp-deploy@v2
+        with:
+          app-name: 'my-node-api-service'
+          publish-profile: ${{ secrets.AZURE_NODE_API_PUBLISH_PROFILE }}
+          package: backend
