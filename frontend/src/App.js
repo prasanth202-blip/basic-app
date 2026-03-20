@@ -6,7 +6,7 @@ function App() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    axios.get('https://basicapp-backend001.azurewebsites.net/api/message')
+    axios.get('https://basicapp-backend001-bpbvhah8f2drdzdb.canadacentral-01.azurewebsites.net/api/message')
       .then(response => {
         setMessage(response.data.message);
       })
